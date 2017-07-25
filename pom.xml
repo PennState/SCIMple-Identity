@@ -19,6 +19,7 @@
     <version.lombok>1.16.14</version.lombok>
     <version.lombok.plugin>${version.lombok}.0</version.lombok.plugin>
     <version.restfuse>1.2.0</version.restfuse>
+    <owasp.skip>false</owasp.skip>
   </properties>
 
   <modules>
@@ -211,6 +212,10 @@
         <!-- <configuration> -->
         <!-- <failBuildOnCVSS>10</failBuildOnCVSS> -->
         <!-- </configuration> -->
+        <configuration>
+          <skip>${owasp.skip}</skip>
+          <skip>${owasp.skip}</skip>
+        </configuration>
         <executions>
           <execution>
             <goals>
