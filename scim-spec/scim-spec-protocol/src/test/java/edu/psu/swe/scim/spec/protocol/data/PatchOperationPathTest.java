@@ -19,8 +19,6 @@
 
 package edu.psu.swe.scim.spec.protocol.data;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
