@@ -24,12 +24,9 @@ package edu.psu.swe.scim.spec.schema;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -88,23 +85,6 @@ public class Mapper {
    * @throws ParseException 
    */
   public Date convertDateTime(String isodate) throws ParseException {
-//    Calendar calendar = null;
-//    Matcher matcher = iso8601Pattern.matcher(date);
-//    if (matcher.matches()) {
-//      TimeZone timeZone = convertTimeZone(matcher.group(TIMEZONE_COMPONENT_INDEX));
-//      calendar = new GregorianCalendar(timeZone);
-//      calendar.set(
-//          Integer.parseInt(matcher.group(DATE_COMPONENT_INDEX_YEAR)),
-//          Integer.parseInt(matcher.group(DATE_COMPONENT_INDEX_MONTH)),
-//          Integer.parseInt(matcher.group(DATE_COMPONENT_INDEX_DAY)),
-//          Integer.parseInt(matcher.group(TIME_COMPONENT_INDEX_HOUR)),
-//          Integer.parseInt(matcher.group(TIME_COMPONENT_INDEX_MINUTE)),
-//          Integer.parseInt(matcher.group(TIME_COMPONENT_INDEX_SECOND))
-//          );
-//    } else {
-//      // TODO - This is an error
-//    }
-//    return calendar.getTime();
     Date date = iso8601DateFormat.parse(isodate);
     return date;
   }

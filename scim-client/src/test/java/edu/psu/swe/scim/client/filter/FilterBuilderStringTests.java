@@ -22,7 +22,6 @@ package edu.psu.swe.scim.client.filter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import edu.psu.swe.scim.spec.protocol.filter.FilterParseException;

@@ -19,15 +19,12 @@
 
 package edu.psu.swe.scim.client.filter;
 
-import static org.junit.Assert.fail;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import edu.psu.swe.scim.spec.protocol.filter.FilterParseException;
