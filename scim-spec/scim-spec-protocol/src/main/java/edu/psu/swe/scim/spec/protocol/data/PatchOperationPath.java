@@ -1,3 +1,22 @@
+/*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+ 
+* http://www.apache.org/licenses/LICENSE-2.0
+
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 package edu.psu.swe.scim.spec.protocol.data;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -10,23 +29,17 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import edu.psu.swe.scim.server.filter.FilterLexer;
 import edu.psu.swe.scim.server.filter.FilterParser;
-import edu.psu.swe.scim.spec.protocol.attribute.AttributeReference;
 import edu.psu.swe.scim.spec.protocol.filter.FilterParseException;
-import edu.psu.swe.scim.spec.protocol.filter.ValueFilterExpression;
+import edu.psu.swe.scim.spec.protocol.filter.ValuePathExpression;
 import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Slf4j
 public class PatchOperationPath {
 
-  private AttributeReference attributeReference;
+  private ValuePathExpression valuePathExpression;
 
-  private ValueFilterExpression valueFilterExpression;
-
-  private String[] subAttributes;
-  
   public PatchOperationPath() {
     
   }
@@ -52,9 +65,7 @@ public class PatchOperationPath {
       PatchPathListener patchPathListener = new PatchPathListener();
       ParseTreeWalker.DEFAULT.walk(patchPathListener, tree);
 
-      this.attributeReference = patchPathListener.getAttributeReference();
-      this.valueFilterExpression = patchPathListener.getValueFilter();
-      this.subAttributes = patchPathListener.getSubAttributes();
+      this.valuePathExpression = patchPathListener.getValuePathExpression();
     } catch (IllegalStateException e) {
       throw new FilterParseException(e);
     }
@@ -62,20 +73,7 @@ public class PatchOperationPath {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(attributeReference.getFullyQualifiedAttributeName());
-    if (valueFilterExpression != null) {
-      sb.append("[")
-        .append(valueFilterExpression.toFilter())
-        .append("]");
-    }
-    if (subAttributes != null) {
-      for (String subAttribute : subAttributes) {
-        sb.append(".")
-          .append(subAttribute);
-      }
-    }
-    return sb.toString();
+    return valuePathExpression.toFilter();
   }
 
 }

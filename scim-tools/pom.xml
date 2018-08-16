@@ -4,7 +4,7 @@
   <parent>
     <groupId>edu.psu.swe.scim</groupId>
     <artifactId>scim-parent</artifactId>
-    <version>2.22</version>
+    <version>2.22.1</version>
   </parent>
 
   <artifactId>scim-tools</artifactId>
@@ -12,9 +12,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>scim-tools-cli</module>
     <module>scim-tools-common</module>
-    <module>scim-tools-studio</module>
   </modules>
 
 </project>

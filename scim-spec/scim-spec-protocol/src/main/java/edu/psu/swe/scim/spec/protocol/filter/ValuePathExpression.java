@@ -1,3 +1,22 @@
+/*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+ 
+* http://www.apache.org/licenses/LICENSE-2.0
+
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 package edu.psu.swe.scim.spec.protocol.filter;
 
 import edu.psu.swe.scim.spec.protocol.attribute.AttributeReference;
@@ -9,46 +28,75 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValuePathExpression implements FilterExpression {
+  // urn:parentAttribute[attributeExpression].subAttribute
+
   AttributeReference attributePath;
-  ValueFilterExpression valueFilter;
-  
-  public static ValuePathExpression fromFilterExpression(String attrRef, FilterExpression filterExpression) throws FilterParseException {
-    AttributeReference ref = new AttributeReference(attrRef);
-    return fromFilterExpression(ref, filterExpression);
+  FilterExpression attributeExpression;
+
+  public ValuePathExpression(AttributeReference attributePath) {
+    this.attributePath = attributePath;
   }
-  
-  public static ValuePathExpression fromFilterExpression(AttributeReference attrRef, FilterExpression filterExpression) throws FilterParseException {
-        
-    ValuePathExpression vpe = new ValuePathExpression();
-    vpe.setAttributePath(attrRef);
-    
-    if (filterExpression instanceof LogicalExpression) {
-      LogicalExpression le = (LogicalExpression) filterExpression;
-      vpe.setValueFilter(le); 
-      return vpe;
-    } else if (filterExpression instanceof GroupExpression) {
-      GroupExpression ge = (GroupExpression) filterExpression;
-      vpe.setValueFilter(ge);
-      return vpe;
-    } else if (filterExpression instanceof AttributePresentExpression) {
-      AttributePresentExpression ape = (AttributePresentExpression) filterExpression;
-      vpe.setValueFilter(ape);
-      return vpe;
-    } else if (filterExpression instanceof AttributeComparisonExpression) {
-      AttributeComparisonExpression ace = (AttributeComparisonExpression) filterExpression;
-      vpe.setValueFilter(ace);
-      return vpe;
-    } else if (filterExpression instanceof ValuePathExpression) {
-      throw new FilterParseException("Value path expressions can not own other value path expressions");
-    }
-      
-    return null;
+
+  public static ValuePathExpression fromFilterExpression(AttributeReference attrRef, FilterExpression attributeExpression) throws FilterParseException {
+    ValuePathExpression vpe = new ValuePathExpression(attrRef, attributeExpression);
+
+    return vpe;
   }
-  
-  
+
+  public static ValuePathExpression fromFilterExpression(String attribute, FilterExpression expression) throws FilterParseException {
+    AttributeReference attributeReference = new AttributeReference(attribute);
+
+    return fromFilterExpression(attributeReference,  expression);
+  }
+
   @Override
   public String toFilter() {
-    return attributePath.getFullyQualifiedAttributeName() + "[" + valueFilter.toFilter() + "]";
+    String filter;
+
+    if (this.attributeExpression != null) {
+      String subAttributeName = this.attributePath.getSubAttributeName();
+      String attributeExpressionFilter = this.attributeExpression.toUnqualifiedFilter();
+
+      if (subAttributeName != null) {
+        String base = this.attributePath.getAttributeBase();
+        filter = base + "[" + attributeExpressionFilter + "]." + subAttributeName;
+      } else {
+        String attribute = this.attributePath.getFullyQualifiedAttributeName();
+        filter = attribute + "[" + attributeExpressionFilter + "]";
+      }
+    } else {
+      filter = this.attributePath.getFullyQualifiedAttributeName();
+    }
+    return filter;
   }
-  
+
+  @Override
+  public void setAttributePath(String urn, String parentAttributeName) {
+    this.attributePath.setUrn(urn);
+    String subAttributeName = this.attributePath.getAttributeName();
+    this.attributePath.setAttributeName(parentAttributeName);
+    this.attributePath.setSubAttributeName(subAttributeName);
+    this.attributeExpression.setAttributePath(urn, parentAttributeName);
+  }
+
+  @Override
+  public String toUnqualifiedFilter() {
+    String filter;
+
+    if (this.attributeExpression != null) {
+      String attributeName = this.attributePath.getAttributeName();
+      String subAttributeName = this.attributePath.getSubAttributeName();
+      String attributeExpressionFilter = this.attributeExpression.toUnqualifiedFilter();
+
+      if (subAttributeName != null) {
+        filter = attributeName + "[" + attributeExpressionFilter + "]." + subAttributeName;
+      } else {
+        filter = attributeName + "[" + attributeExpressionFilter + "]";
+      }
+    } else {
+      String subAttributeName = this.attributePath.getSubAttributeName();
+      filter = this.attributePath.getAttributeName() + (subAttributeName != null ? "." + subAttributeName : "");
+    }
+    return filter;
+  }
 }

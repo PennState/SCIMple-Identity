@@ -1,3 +1,8 @@
+# NOTE: This project has been moved to the Apache Directory Project.  
+**The new Repo is at https://github.com/apache/directory-scimple**
+**Over the next few weeks we will be adjusting package names and migrating tickets.** 
+**For those using the library, your patience is appreciated.**
+
 # SCIM
 
 Penn State's Open Source JavaEE implementation of the Simple Cross-domain Identity

@@ -1,3 +1,22 @@
+/*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+ 
+* http://www.apache.org/licenses/LICENSE-2.0
+
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 package edu.psu.swe.scim.server.provider;
 
 import java.lang.reflect.Field;
@@ -48,7 +67,8 @@ import edu.psu.swe.scim.spec.protocol.data.PatchOperation.Type;
 import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
 import edu.psu.swe.scim.spec.protocol.filter.AttributeComparisonExpression;
 import edu.psu.swe.scim.spec.protocol.filter.CompareOperator;
-import edu.psu.swe.scim.spec.protocol.filter.ValueFilterExpression;
+import edu.psu.swe.scim.spec.protocol.filter.FilterExpression;
+import edu.psu.swe.scim.spec.protocol.filter.ValuePathExpression;
 import edu.psu.swe.scim.spec.resources.ScimExtension;
 import edu.psu.swe.scim.spec.resources.ScimResource;
 import edu.psu.swe.scim.spec.resources.ScimUser;
@@ -333,7 +353,8 @@ public class UpdateRequest<T extends ScimResource> {
     
     AttributeReference attributeReference = new AttributeReference(parseData.pathUri, null);
     PatchOperationPath patchOperationPath = new PatchOperationPath();
-    patchOperationPath.setAttributeReference(attributeReference);
+    ValuePathExpression valuePathExpression = new ValuePathExpression(attributeReference);
+    patchOperationPath.setValuePathExpression(valuePathExpression);
     
     operation.setPath(patchOperationPath);
     operation.setValue(determineValue(patchOpType, valueNode, parseData));
@@ -347,7 +368,7 @@ public class UpdateRequest<T extends ScimResource> {
     List<PatchOperation> operations = new ArrayList<>();
     
     List<String> attributeReferenceList = new ArrayList<>();
-    ValueFilterExpression valueFilterExpression = null;
+    FilterExpression valueFilterExpression = null;
     List<String> subAttributes = new ArrayList<>();
 
     boolean processingMultiValued = false;
@@ -451,15 +472,19 @@ public class UpdateRequest<T extends ScimResource> {
   }
   
   private PatchOperation buildPatchOperation(PatchOperation.Type patchOpType, ParseData parseData, List<String> attributeReferenceList,
-                                             ValueFilterExpression valueFilterExpression, List<String> subAttributes, Object value) {
+                                             FilterExpression valueFilterExpression, List<String> subAttributes, Object value) {
     PatchOperation operation = new PatchOperation();
     operation.setOperation(patchOpType);
-    
-    AttributeReference attributeReference = new AttributeReference(parseData.pathUri, attributeReferenceList.stream().collect(Collectors.joining(".")));
+    String attribute = attributeReferenceList.get(0);
+    String subAttribute = attributeReferenceList.size() > 1 ? attributeReferenceList.get(1) : null;
+
+    if (subAttribute == null && !subAttributes.isEmpty()) {
+      subAttribute = subAttributes.get(0);
+    }
+    AttributeReference attributeReference = new AttributeReference(parseData.pathUri, attribute, subAttribute);
     PatchOperationPath patchOperationPath = new PatchOperationPath();
-    patchOperationPath.setAttributeReference(attributeReference);
-    patchOperationPath.setValueFilterExpression(valueFilterExpression);
-    patchOperationPath.setSubAttributes(subAttributes.isEmpty() ? null : subAttributes.toArray(new String[subAttributes.size()]));
+    ValuePathExpression valuePathExpression = new ValuePathExpression(attributeReference, valueFilterExpression);
+    patchOperationPath.setValuePathExpression(valuePathExpression);
 
     operation.setPath(patchOperationPath);
     operation.setValue(value);
