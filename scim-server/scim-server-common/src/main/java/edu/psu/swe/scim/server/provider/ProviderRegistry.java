@@ -133,6 +133,7 @@ public class ProviderRegistry {
     providerMap.put(clazz, providerInstance);
   }
 
+  @Deprecated
   @Lock(LockType.READ)
   @SuppressWarnings("unchecked")
   public <T extends ScimResource> Provider<T> getProvider(Class<T> clazz) {

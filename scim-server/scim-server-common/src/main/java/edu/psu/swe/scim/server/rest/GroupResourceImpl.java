@@ -22,21 +22,35 @@
  */
 package edu.psu.swe.scim.server.rest;
 
-import javax.inject.Inject;
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.util.TypeLiteral;
 
 import edu.psu.swe.scim.server.provider.Provider;
-import edu.psu.swe.scim.server.provider.ProviderRegistry;
 import edu.psu.swe.scim.spec.protocol.GroupResource;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@Stateless
 public class GroupResourceImpl extends BaseResourceTypeResourceImpl<ScimGroup> implements GroupResource {
 
-  @Inject
-  ProviderRegistry providerRegistry;
+//  @Inject
+////  @ProviderQualifier(ScimGroup.class)
+//  Provider<ScimGroup> provider;
 
   @Override
   public Provider<ScimGroup> getProvider() {
-    return providerRegistry.getProvider(ScimGroup.class);
+    try {
+      TypeLiteral<Provider<ScimGroup>> typeLiteral = new TypeLiteral<Provider<ScimGroup>>() {
+      };
+      Instance<Provider<ScimGroup>> select = CDI.current().select(typeLiteral);
+      return select.get();
+    } catch (Exception e) {
+      log.warn("Provider doesn't exist", e);
+      return null;
+    }
   }
   
 }
