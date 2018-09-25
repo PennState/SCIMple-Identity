@@ -26,11 +26,8 @@ import javax.ejb.Stateless;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.TypeLiteral;
-import javax.inject.Inject;
 
 import edu.psu.swe.scim.server.provider.Provider;
-import edu.psu.swe.scim.server.provider.ProviderQualifier;
-import edu.psu.swe.scim.server.provider.ProviderRegistry;
 import edu.psu.swe.scim.spec.protocol.UserResource;
 import edu.psu.swe.scim.spec.resources.ScimUser;
 import lombok.extern.slf4j.Slf4j;
