@@ -3,6 +3,9 @@
 **Over the next few weeks we will be adjusting package names and migrating tickets.** 
 **For those using the library, your patience is appreciated.**
 
+**Issue tracking has been turned off for this project.  All issues must be submitted**
+**against Apache's Jira issue tracker at https://issues.apache.org/jira/projects/SCIMPLE/issues.**
+
 # SCIM
 
 Penn State's Open Source JavaEE implementation of the Simple Cross-domain Identity
